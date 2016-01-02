@@ -16,7 +16,7 @@ public class RpcServerHandler extends ChannelInboundHandlerAdapter {
 
     public void channelRegistered(ChannelHandlerContext ctx) throws Exception {
         final String remoteAddress = RemotingHelper.parseChannelRemoteAddr(ctx.channel());
-        logger.info("rpc server PIPELINE: channelRegistered {}", remoteAddress);
+        logger.info("rpc server pipeline: channelRegistered {}", remoteAddress);
         ctx.fireChannelRegistered();
     }
 
@@ -30,7 +30,7 @@ public class RpcServerHandler extends ChannelInboundHandlerAdapter {
     public void exceptionCaught(ChannelHandlerContext ctx, Throwable e) throws Exception {
         final String remoteAddress = RemotingHelper.parseChannelRemoteAddr(ctx.channel());
         logger.warn("rpc server pipeline: exceptionCaught {}", remoteAddress);
-        logger.warn("rpc server PIPELINE: exceptionCaught exception.", e);
+        logger.warn("rpc server pipeline: exceptionCaught exception.", e);
         ctx.channel().close();
     }
 
