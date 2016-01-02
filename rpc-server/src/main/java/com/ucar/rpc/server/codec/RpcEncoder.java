@@ -3,11 +3,15 @@ package com.ucar.rpc.server.codec;
 import io.netty.buffer.ByteBuf;
 import io.netty.channel.ChannelHandlerContext;
 import io.netty.handler.codec.MessageToByteEncoder;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 /**
  * Created by zhangyong on 16/1/1.
  */
 public class RpcEncoder extends MessageToByteEncoder {
+
+    private final static Logger logger = LoggerFactory.getLogger(RpcEncoder.class);
 
     @Override
     protected void encode(ChannelHandlerContext ctx, Object msg, ByteBuf out) throws Exception {

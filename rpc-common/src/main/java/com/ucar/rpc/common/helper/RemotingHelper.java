@@ -44,7 +44,6 @@ public class RemotingHelper {
         return isa;
     }
 
-
     public static String parseChannelRemoteAddr(final Channel channel) {
         if (null == channel) {
             return "";

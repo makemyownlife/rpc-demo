@@ -12,4 +12,14 @@
     <artifactId>rpc-client</artifactId>
     <packaging>jar</packaging>
 
+    <dependencies>
+
+        <dependency>
+            <groupId>com.ucar.rpc</groupId>
+            <artifactId>rpc-server</artifactId>
+            <version>1.0.0-SNAPSHOT</version>
+        </dependency>
+
+    </dependencies>
+
 </project>

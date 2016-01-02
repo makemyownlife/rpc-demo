@@ -7,7 +7,7 @@ import org.junit.Test;
 /**
  * Created by zhangyong on 16/1/1.
  */
-public class RpcServerTest {
+public class RpcServerUnitTest {
 
     public static RpcServer startRpcServer() {
         final RpcServerConfig rpcSystemConfig = new RpcServerConfig();
@@ -19,11 +19,6 @@ public class RpcServerTest {
     public void testServer() {
         RpcServer rpcServer = startRpcServer();
         rpcServer.start();
-        try {
-            Thread.sleep(10000);
-        } catch (InterruptedException e) {
-            e.printStackTrace();
-        }
     }
 
 }
