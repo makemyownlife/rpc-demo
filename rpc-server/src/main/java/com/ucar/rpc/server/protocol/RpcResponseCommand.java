@@ -11,5 +11,4 @@ public class RpcResponseCommand implements RpcCommand {
 
     private Object result;
 
-
 }

@@ -17,7 +17,7 @@ public class RpcServerDecoder extends ByteToMessageDecoder {
 
     @Override
     protected void decode(ChannelHandlerContext ctx, ByteBuf in, List<Object> out) throws Exception {
-
+        int originIndex = in.readerIndex();
     }
 
 }

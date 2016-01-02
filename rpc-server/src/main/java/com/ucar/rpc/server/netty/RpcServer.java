@@ -1,5 +1,6 @@
 package com.ucar.rpc.server.netty;
 
+import com.ucar.rpc.server.BeanLocator;
 import com.ucar.rpc.server.RemotingService;
 import com.ucar.rpc.server.RpcServiceHook;
 import com.ucar.rpc.server.codec.RpcServerDecoder;
@@ -44,9 +45,12 @@ public class RpcServer implements RemotingService {
 
     private RpcServerConfig rpcServerConfig;
 
-    public RpcServer(final RpcServerConfig rpcServerConfig) {
+    private BeanLocator beanLocator;
+
+    public RpcServer(final RpcServerConfig rpcServerConfig, BeanLocator beanLocator) {
         this.serverBootstrap = new ServerBootstrap();
         this.rpcServerConfig = rpcServerConfig;
+        this.beanLocator = beanLocator;
 
         int publicThreadNums = rpcServerConfig.getServerCallbackExecutorThreads();
         if (publicThreadNums <= 0) {

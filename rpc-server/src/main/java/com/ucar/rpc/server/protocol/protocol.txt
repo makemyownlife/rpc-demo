@@ -1,0 +1,11 @@
+request
+magicNumber  opaque   beanName-length   beanName  method-length methodName params-length params
+    1         4            4                        4                          4
+
+response
+
+magicNumber  opaque    object-length    Object
+    1         4            4             对象
+
+
+
