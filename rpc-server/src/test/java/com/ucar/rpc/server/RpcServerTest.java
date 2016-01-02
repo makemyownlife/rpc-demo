@@ -19,6 +19,11 @@ public class RpcServerTest {
     public void testServer() {
         RpcServer rpcServer = startRpcServer();
         rpcServer.start();
+        try {
+            Thread.sleep(10000);
+        } catch (InterruptedException e) {
+            e.printStackTrace();
+        }
     }
 
 }
