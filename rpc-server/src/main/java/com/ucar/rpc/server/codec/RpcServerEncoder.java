@@ -9,9 +9,9 @@ import org.slf4j.LoggerFactory;
 /**
  * Created by zhangyong on 16/1/1.
  */
-public class RpcEncoder extends MessageToByteEncoder {
+public class RpcServerEncoder extends MessageToByteEncoder {
 
-    private final static Logger logger = LoggerFactory.getLogger(RpcEncoder.class);
+    private final static Logger logger = LoggerFactory.getLogger(RpcServerEncoder.class);
 
     @Override
     protected void encode(ChannelHandlerContext ctx, Object msg, ByteBuf out) throws Exception {

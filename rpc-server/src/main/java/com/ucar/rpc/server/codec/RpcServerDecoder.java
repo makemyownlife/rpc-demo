@@ -11,9 +11,9 @@ import java.util.List;
 /**
  * Created by zhangyong on 16/1/1.
  */
-public class RpcDecoder extends ByteToMessageDecoder {
+public class RpcServerDecoder extends ByteToMessageDecoder {
 
-    private final static Logger logger = LoggerFactory.getLogger(RpcDecoder.class);
+    private final static Logger logger = LoggerFactory.getLogger(RpcServerDecoder.class);
 
     @Override
     protected void decode(ChannelHandlerContext ctx, ByteBuf in, List<Object> out) throws Exception {

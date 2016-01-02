@@ -21,26 +21,21 @@ public class RpcRequestCommand implements RpcCommand {
         return this.beanName;
     }
 
-
     public void setBeanName(final String beanName) {
         this.beanName = beanName;
     }
-
 
     public void setMethodName(final String methodName) {
         this.methodName = methodName;
     }
 
-
     public void setArguments(final Object[] arguments) {
         this.arguments = arguments;
     }
 
-
     public String getMethodName() {
         return this.methodName;
     }
-
 
     public Object[] getArguments() {
         return this.arguments;
@@ -56,6 +51,10 @@ public class RpcRequestCommand implements RpcCommand {
 
     public void setOpaque(final Integer opaque) {
         this.opaque = opaque;
+    }
+
+    public Integer getOpaque() {
+        return opaque;
     }
 
 }

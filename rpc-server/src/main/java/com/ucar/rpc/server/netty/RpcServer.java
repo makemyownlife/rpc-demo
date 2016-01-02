@@ -2,8 +2,8 @@ package com.ucar.rpc.server.netty;
 
 import com.ucar.rpc.server.RemotingService;
 import com.ucar.rpc.server.RpcServiceHook;
-import com.ucar.rpc.server.codec.RpcDecoder;
-import com.ucar.rpc.server.codec.RpcEncoder;
+import com.ucar.rpc.server.codec.RpcServerDecoder;
+import com.ucar.rpc.server.codec.RpcServerEncoder;
 import com.ucar.rpc.server.codec.RpcServerHandler;
 import io.netty.bootstrap.ServerBootstrap;
 import io.netty.buffer.PooledByteBufAllocator;
@@ -113,8 +113,8 @@ public class RpcServer implements RemotingService {
                             public void initChannel(SocketChannel ch) throws Exception {
                                 ch.pipeline().addLast(
                                         defaultEventExecutorGroup,
-                                        new RpcEncoder(),
-                                        new RpcDecoder(),
+                                        new RpcServerEncoder(),
+                                        new RpcServerDecoder(),
                                         new IdleStateHandler(0, 0, rpcServerConfig
                                                 .getServerChannelMaxIdleTimeSeconds()),
                                         new RpcServerHandler());
