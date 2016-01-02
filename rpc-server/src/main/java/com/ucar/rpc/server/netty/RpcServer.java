@@ -145,22 +145,21 @@ public class RpcServer implements RemotingService {
             if (this.defaultEventExecutorGroup != null) {
                 this.defaultEventExecutorGroup.shutdownGracefully();
             }
-        }
-        catch (Exception e) {
-            logger.error("NettyRemotingServer shutdown exception, ", e);
+        } catch (Exception e) {
+            logger.error("RpcServer shutdown exception, ", e);
         }
         if (this.publicExecutor != null) {
             try {
                 this.publicExecutor.shutdown();
-            }
-            catch (Exception e) {
+            } catch (Exception e) {
                 logger.error("NettyRemotingServer shutdown exception, ", e);
             }
         }
     }
 
     @Override
-    public void registerRPCHook(RpcServiceHook rpcServiceHook) {
+    public void registerRpcHook(RpcServiceHook rpcServiceHook) {
 
     }
+
 }
