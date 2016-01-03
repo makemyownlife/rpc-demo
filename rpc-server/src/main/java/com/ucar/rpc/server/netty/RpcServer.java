@@ -1,8 +1,7 @@
 package com.ucar.rpc.server.netty;
 
 import com.ucar.rpc.server.BeanLocator;
-import com.ucar.rpc.server.RemotingService;
-import com.ucar.rpc.server.RpcServiceHook;
+import com.ucar.rpc.server.RemotingServerService;
 import com.ucar.rpc.server.codec.RpcServerDecoder;
 import com.ucar.rpc.server.codec.RpcServerEncoder;
 import com.ucar.rpc.server.codec.RpcServerHandler;
@@ -29,7 +28,7 @@ import java.util.concurrent.atomic.AtomicInteger;
 /**
  * Created by zhangyong on 16/1/1.
  */
-public class RpcServer implements RemotingService {
+public class RpcServer implements RemotingServerService {
 
     private final static Logger logger = LoggerFactory.getLogger(RpcServer.class);
 
@@ -161,9 +160,5 @@ public class RpcServer implements RemotingService {
         }
     }
 
-    @Override
-    public void registerRpcHook(RpcServiceHook rpcServiceHook) {
-
-    }
 
 }

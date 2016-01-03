@@ -11,7 +11,7 @@ public class RpcServerUnitTest {
 
     public static RpcServer startRpcServer() {
         final RpcServerConfig rpcSystemConfig = new RpcServerConfig();
-        RpcServer rpcServer = new RpcServer(rpcSystemConfig);
+        RpcServer rpcServer = new RpcServer(rpcSystemConfig, null);
         return rpcServer;
     }
 

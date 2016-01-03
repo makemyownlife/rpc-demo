@@ -7,10 +7,6 @@ public interface RemotingService {
 
     public void start();
 
-
     public void shutdown();
-
-
-    public void registerRpcHook(RpcServiceHook rpcServiceHook);
 
 }

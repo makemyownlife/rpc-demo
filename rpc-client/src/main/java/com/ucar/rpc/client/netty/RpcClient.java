@@ -1,5 +1,6 @@
 package com.ucar.rpc.client.netty;
 
+import com.ucar.rpc.client.RemotingClientService;
 import com.ucar.rpc.client.codec.RpcClientDecoder;
 import com.ucar.rpc.client.codec.RpcClientEncoder;
 import com.ucar.rpc.client.codec.RpcClientHandler;
@@ -26,7 +27,7 @@ import java.util.concurrent.atomic.AtomicInteger;
  * rpc客户端实现
  * Created by zhangyong on 16/1/2.
  */
-public class RpcClient implements RemotingService {
+public class RpcClient implements RemotingClientService {
 
     private final static Logger logger = LoggerFactory.getLogger(RpcClient.class);
 
@@ -94,11 +95,23 @@ public class RpcClient implements RemotingService {
 
     @Override
     public void shutdown() {
-
+        try {
+            this.eventLoopGroupWorker.shutdownGracefully();
+            if (this.defaultEventExecutorGroup != null) {
+                this.defaultEventExecutorGroup.shutdownGracefully();
+            }
+        }
+        catch (Exception e) {
+            logger.error("rpcClient shutdown exception, ", e);
+        }
+        if (this.publicExecutor != null) {
+            try {
+                this.publicExecutor.shutdown();
+            }
+            catch (Exception e) {
+                logger.error("rpcClient shutdown exception, ", e);
+            }
+        }
     }
 
-    @Override
-    public void registerRpcHook(RpcServiceHook rpcServiceHook) {
-
-    }
 }
