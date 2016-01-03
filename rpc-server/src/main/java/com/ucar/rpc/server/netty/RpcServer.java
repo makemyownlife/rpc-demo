@@ -120,7 +120,7 @@ public class RpcServer implements RemotingServerService {
                                         new RpcServerDecoder(),
                                         new IdleStateHandler(0, 0, rpcServerConfig
                                                 .getServerChannelMaxIdleTimeSeconds()),
-                                        new RpcServerHandler());
+                                        new RpcServerHandler(publicExecutor, beanLocator));
                             }
                         });
 

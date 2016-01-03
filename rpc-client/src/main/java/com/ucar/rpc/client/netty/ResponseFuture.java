@@ -81,4 +81,7 @@ public class ResponseFuture {
         this.cause = cause;
     }
 
+    public void setResponseCommand(RpcResponseCommand responseCommand) {
+        this.responseCommand = responseCommand;
+    }
 }

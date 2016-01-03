@@ -1,5 +1,9 @@
 package com.ucar.rpc.server.codec;
 
+import com.ucar.rpc.common.RemotingUtil;
+import com.ucar.rpc.common.buffer.IoBuffer;
+import com.ucar.rpc.common.helper.RemotingHelper;
+import com.ucar.rpc.server.protocol.RpcResponseCommand;
 import io.netty.buffer.ByteBuf;
 import io.netty.channel.ChannelHandlerContext;
 import io.netty.handler.codec.MessageToByteEncoder;
@@ -15,7 +19,17 @@ public class RpcServerEncoder extends MessageToByteEncoder {
 
     @Override
     protected void encode(ChannelHandlerContext ctx, Object msg, ByteBuf out) throws Exception {
-
+        RpcResponseCommand responseCommand = (RpcResponseCommand) msg;
+        try {
+            IoBuffer ioBuffer = responseCommand.encode();
+            out.writeBytes(ioBuffer.array());
+        } catch (Exception e) {
+            logger.error("encode exception, " + RemotingHelper.parseChannelRemoteAddr(ctx.channel()), e);
+            if (responseCommand != null) {
+                logger.error(responseCommand.toString());
+            }
+            RemotingUtil.closeChannel(ctx.channel());
+        }
     }
 
 }

@@ -24,7 +24,7 @@ public class RpcClientUnitTest {
 
     public RpcServer createRpcServer() {
         RpcServerConfig rpcServerConfig = new RpcServerConfig();
-        RpcServer rpcServer = new RpcServer(rpcServerConfig, null);
+        RpcServer rpcServer = new RpcServer(rpcServerConfig, new MyBeanLocator());
         return rpcServer;
     }
 
@@ -35,7 +35,11 @@ public class RpcClientUnitTest {
         RpcClient client = createRpcClient();
         client.start();
         RpcRequestCommand rpcRequestCommand = new RpcRequestCommand("hello", "sayHello", new Object[]{"zhangyong", "lilin"});
-        RpcResponseCommand rpcResponseCommand = client.invokeSync("localhost:8888", rpcRequestCommand, 5000);
+        RpcResponseCommand rpcResponseCommand = client.invokeSync("localhost:8888", rpcRequestCommand, 15000);
+        System.out.println(rpcResponseCommand.getResult());
+        rpcRequestCommand = new RpcRequestCommand("hello", "sayHello", new Object[]{"zhangyong", new Integer(12)});
+        rpcResponseCommand = client.invokeSync("localhost:8888", rpcRequestCommand, 15000);
+        System.out.println(rpcResponseCommand.getResult());
     }
 
 

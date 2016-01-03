@@ -82,6 +82,7 @@ public class RpcClient implements RemotingClientService {
 
     @Override
     public void start() {
+        final RpcClient instance = this;
         this.defaultEventExecutorGroup = new DefaultEventExecutorGroup(//
                 rpcClientConfig.getClientWorkerThreads(), //
                 new ThreadFactory() {
@@ -105,7 +106,7 @@ public class RpcClient implements RemotingClientService {
                                 new RpcClientEncoder(),
                                 new RpcClientDecoder(),
                                 new IdleStateHandler(0, 0, rpcClientConfig.getClientChannelMaxIdleTimeSeconds()),
-                                new RpcClientHandler());
+                                new RpcClientHandler(instance));
                     }
                 });
     }
@@ -314,6 +315,14 @@ public class RpcClient implements RemotingClientService {
         } catch (InterruptedException e) {
             logger.error("closeChannel exception", e);
         }
+    }
+
+    public ExecutorService getPublicExecutor() {
+        return publicExecutor;
+    }
+
+    public ConcurrentHashMap<Integer, ResponseFuture> getResponseTable() {
+        return responseTable;
     }
 
 }
