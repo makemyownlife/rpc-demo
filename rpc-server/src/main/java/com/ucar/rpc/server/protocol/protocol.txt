@@ -4,8 +4,8 @@ magicNumber  opaque   beanName-length   beanName  method-length methodName param
 
 response
 
-magicNumber  opaque    object-length    Object
-    1         4            4             对象
+magicNumber  opaque   status object-length    Object
+    1         4          2        4             对象
 
 
 
