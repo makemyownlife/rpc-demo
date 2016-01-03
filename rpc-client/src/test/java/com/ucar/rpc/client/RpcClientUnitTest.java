@@ -11,6 +11,9 @@ import com.ucar.rpc.server.protocol.RpcRequestCommand;
 import com.ucar.rpc.server.protocol.RpcResponseCommand;
 import org.junit.Test;
 
+import java.util.HashMap;
+import java.util.Map;
+
 /**
  * Created by zhangyong on 16/1/2.
  */
@@ -34,13 +37,30 @@ public class RpcClientUnitTest {
         rpcServer.start();
         RpcClient client = createRpcClient();
         client.start();
-        RpcRequestCommand rpcRequestCommand = new RpcRequestCommand("hello", "sayHello", new Object[]{"zhangyong", "lilin"});
-        RpcResponseCommand rpcResponseCommand = client.invokeSync("localhost:8888", rpcRequestCommand, 15000);
-        System.out.println(rpcResponseCommand.getResult());
-        rpcRequestCommand = new RpcRequestCommand("hello", "sayHello", new Object[]{"zhangyong", new Integer(12)});
+        RpcRequestCommand rpcRequestCommand = null;
+        RpcResponseCommand rpcResponseCommand = null;
+        Map map = new HashMap();
+        map.put(1, "112");
+        rpcRequestCommand = new RpcRequestCommand("hello", "sayHello", new Object[]{map});
         rpcResponseCommand = client.invokeSync("localhost:8888", rpcRequestCommand, 15000);
         System.out.println(rpcResponseCommand.getResult());
     }
 
+    @Test
+    public void testSayHelloUser() throws InterruptedException, RpcConnectException, RpcSendRequestException, RpcTimeoutException {
+        RpcServer rpcServer = createRpcServer();
+        rpcServer.start();
+        RpcClient client = createRpcClient();
+        client.start();
+        RpcRequestCommand rpcRequestCommand = null;
+        RpcResponseCommand rpcResponseCommand = null;
+        User user = new User();
+        user.setUsername("mylife");
+        user.setA(4)
+        ;
+        rpcRequestCommand = new RpcRequestCommand("hello", "testUser", new Object[]{user});
+        rpcResponseCommand = client.invokeSync("localhost:8888", rpcRequestCommand, 15000);
+        System.out.println(rpcResponseCommand.getResult());
+    }
 
 }

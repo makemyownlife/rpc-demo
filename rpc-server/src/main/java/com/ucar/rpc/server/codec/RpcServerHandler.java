@@ -87,9 +87,13 @@ public class RpcServerHandler extends ChannelInboundHandlerAdapter {
                                 method = CACHE_METHOD.get(methodKeyBuilder.toString());
                                 // cache cant find
                                 if (method == null) {
-                                    method = clazz.getMethod(methodName, argTypeClasses);
-                                    if (method.isAccessible()) {
-                                        CACHE_METHOD.put(methodKeyBuilder.toString(), method);
+                                    try {
+                                        method = clazz.getMethod(methodName, argTypeClasses);
+                                        if (method.isAccessible()) {
+                                            CACHE_METHOD.put(methodKeyBuilder.toString(), method);
+                                        }
+                                    } catch (NoSuchMethodException e) {
+                                        logger.error("get method error:", e);
                                     }
                                 }
                                 //recheck again
@@ -102,7 +106,7 @@ public class RpcServerHandler extends ChannelInboundHandlerAdapter {
                                         responseStatus = ResponseStatus.NO_ERROR;
                                     } catch (Throwable e) {
                                         logger.error("rpc hanlder method invoke error:", e);
-                                        responseStatus = ResponseStatus.EXCEPTION;
+                                        responseStatus = ResponseStatus.ERROR;
                                     }
                                     responseCommand = new RpcResponseCommand(
                                             requestCommand.getOpaque(),

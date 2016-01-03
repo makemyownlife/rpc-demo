@@ -37,8 +37,10 @@ public class RpcResponseCommand implements RpcCommand {
         buffer.put((byte) 0x71);
         buffer.putInt(this.opaque);
         buffer.putShort(ResponseStatusCode.getValue(this.responseStatus));
-        buffer.putInt(resultData.length);
-        buffer.put(resultData);
+        buffer.putInt((resultData == null) ? 0 : resultData.length);
+        if (resultData != null) {
+            buffer.put(resultData);
+        }
         buffer.flip();
         return buffer;
     }

@@ -54,7 +54,6 @@ public class RpcClientHandler extends ChannelInboundHandlerAdapter {
                 }else {
 
                 }
-
             } else {
                 responseFuture.putResponse(responseCommand);
             }
