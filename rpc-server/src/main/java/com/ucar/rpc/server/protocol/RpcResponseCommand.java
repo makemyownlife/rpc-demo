@@ -1,5 +1,7 @@
 package com.ucar.rpc.server.protocol;
 
+import com.ucar.rpc.common.buffer.IoBuffer;
+
 /**
  * Created by zhangyong on 16/1/2.
  */
@@ -11,6 +13,13 @@ public class RpcResponseCommand implements RpcCommand {
 
     private Object result;
 
+    public boolean decode(IoBuffer buffer) {
+        return false;
+    }
 
+    @Override
+    public IoBuffer encode() {
+        return null;
+    }
 
 }

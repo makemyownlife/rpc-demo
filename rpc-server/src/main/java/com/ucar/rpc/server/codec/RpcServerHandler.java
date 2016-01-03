@@ -1,6 +1,5 @@
 package com.ucar.rpc.server.codec;
 
-import com.ucar.rpc.common.RemotingUtil;
 import com.ucar.rpc.common.helper.RemotingHelper;
 import io.netty.channel.ChannelHandlerContext;
 import io.netty.channel.ChannelInboundHandlerAdapter;
