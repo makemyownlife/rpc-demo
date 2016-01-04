@@ -149,9 +149,9 @@
                 <version>3.7.ga</version>
             </dependency>
             <dependency>
-                <groupId>com.caucho</groupId>
-                <artifactId>hessian</artifactId>
-                <version>3.1.5</version>
+            	<groupId>com.caucho</groupId>
+            	<artifactId>hessian</artifactId>
+            	<version>4.0.7</version>
             </dependency>
         </dependencies>
     </dependencyManagement>
