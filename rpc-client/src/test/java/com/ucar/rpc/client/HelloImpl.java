@@ -23,8 +23,7 @@ public class HelloImpl implements Hello {
         return "hello lilin,wtafsadf:" + age;
     }
 
-    @Override
-    public Map sayHello(Map name) {
+    public Map sayHello(HashMap name) {
         System.out.println(name);
         name.put("he", 12);
         return name;

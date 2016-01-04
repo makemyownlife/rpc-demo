@@ -1,5 +1,6 @@
 package com.ucar.rpc.client;
 
+import java.util.HashMap;
 import java.util.Map;
 
 /**
@@ -13,7 +14,7 @@ public interface Hello {
 
     public String sayHello(String name, String age);
 
-    public Map sayHello(Map name);
+    public Map sayHello(HashMap name);
 
     public Map testUser(User user);
 
