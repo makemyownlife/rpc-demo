@@ -22,7 +22,8 @@ public class RpcServerEncoder extends MessageToByteEncoder {
         RpcResponseCommand responseCommand = (RpcResponseCommand) msg;
         try {
             IoBuffer ioBuffer = responseCommand.encode();
-            out.writeBytes(ioBuffer.array());
+            byte[] buf = ioBuffer.array();
+            out.writeBytes(buf);
         } catch (Exception e) {
             logger.error("encode exception, " + RemotingHelper.parseChannelRemoteAddr(ctx.channel()), e);
             if (responseCommand != null) {

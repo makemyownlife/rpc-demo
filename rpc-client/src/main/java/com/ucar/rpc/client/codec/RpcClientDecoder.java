@@ -35,9 +35,12 @@ public class RpcClientDecoder extends ByteToMessageDecoder {
             in.readerIndex(originIndex);
             return;
         }
-        byte[] resultData = new byte[resultLength];
-        in.readBytes(resultData);
-        Object result = Hessian1Utils.decodeObject(resultData);
+        Object result = null;
+        if (resultLength > 0) {
+            byte[] resultData = new byte[resultLength];
+            in.readBytes(resultData);
+            result = Hessian1Utils.decodeObject(resultData);
+        }
         RpcResponseCommand responseCommand = new RpcResponseCommand(opaque, responseStatus, result);
         objects.add(responseCommand);
     }

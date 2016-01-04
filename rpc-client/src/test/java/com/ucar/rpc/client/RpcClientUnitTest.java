@@ -11,6 +11,9 @@ import com.ucar.rpc.server.protocol.RpcRequestCommand;
 import com.ucar.rpc.server.protocol.RpcResponseCommand;
 import org.junit.Test;
 
+import java.util.HashMap;
+import java.util.Map;
+
 /**
  * Created by zhangyong on 16/1/2.
  */
@@ -36,7 +39,9 @@ public class RpcClientUnitTest {
         client.start();
         RpcRequestCommand rpcRequestCommand = null;
         RpcResponseCommand rpcResponseCommand = null;
-        rpcRequestCommand = new RpcRequestCommand("hello", "sayHello", new Object[]{"makemyownlife"});
+        Map map = new HashMap();
+        map.put("hello," ,"12");
+        rpcRequestCommand = new RpcRequestCommand("hello", "sayHello", new Object[]{map});
         rpcResponseCommand = client.invokeSync("localhost:8888", rpcRequestCommand, 15000);
         System.out.println(rpcResponseCommand.getResult());
     }
