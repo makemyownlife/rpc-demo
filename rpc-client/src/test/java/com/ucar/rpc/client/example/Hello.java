@@ -1,4 +1,4 @@
-package com.ucar.rpc.client;
+package com.ucar.rpc.client.example;
 
 import java.util.HashMap;
 import java.util.Map;
