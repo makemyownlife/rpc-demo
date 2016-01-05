@@ -90,7 +90,7 @@ public class RpcClient implements RemotingClientService {
 
                     @Override
                     public Thread newThread(Runnable r) {
-                        return new Thread(r, "NettyClientWorkerThread_" + this.threadIndex.incrementAndGet());
+                        return new Thread(r, "RpcClientWorkerThread_" + this.threadIndex.incrementAndGet());
                     }
                 });
         Bootstrap handler = this.bootstrap.group(this.eventLoopGroupWorker).channel(NioSocketChannel.class)//
