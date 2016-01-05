@@ -1,5 +1,6 @@
 package com.ucar.rpc.client.netty;
 
+import com.ucar.rpc.client.InvokeCallback;
 import com.ucar.rpc.client.RemotingClientService;
 import com.ucar.rpc.client.codec.RpcClientDecoder;
 import com.ucar.rpc.client.codec.RpcClientEncoder;
@@ -168,6 +169,15 @@ public class RpcClient implements RemotingClientService {
             return responseCommand;
         } finally {
             this.responseTable.remove(request.getOpaque());
+        }
+    }
+
+    @Override
+    public void invokeAsync(String addr, RpcRequestCommand request, long timeoutMillis, InvokeCallback invokeCallback) throws InterruptedException, RpcConnectException, RpcTimeoutException, RpcSendRequestException {
+        final Channel channel = this.getAndCreateChannel(addr);
+        if (channel == null || !channel.isActive()) {
+            this.closeChannel(addr, channel);
+            throw new RpcConnectException(addr);
         }
     }
 

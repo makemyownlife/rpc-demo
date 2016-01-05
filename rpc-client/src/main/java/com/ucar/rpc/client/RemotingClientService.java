@@ -16,4 +16,9 @@ public interface RemotingClientService extends RemotingService {
                                          final RpcRequestCommand request,
                                          final long timeoutMillis) throws InterruptedException, RpcConnectException, RpcTimeoutException, RpcSendRequestException;
 
+    public void invokeAsync(final String addr,
+                            final RpcRequestCommand request,
+                            final long timeoutMillis,
+                            final InvokeCallback invokeCallback) throws InterruptedException, RpcConnectException, RpcTimeoutException, RpcSendRequestException;
+
 }
