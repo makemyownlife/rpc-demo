@@ -6,9 +6,11 @@ import com.ucar.rpc.client.codec.RpcClientDecoder;
 import com.ucar.rpc.client.codec.RpcClientEncoder;
 import com.ucar.rpc.client.codec.RpcClientHandler;
 import com.ucar.rpc.common.RemotingUtil;
+import com.ucar.rpc.common.SemaphoreReleaseOnlyOnce;
 import com.ucar.rpc.common.exception.RpcConnectException;
 import com.ucar.rpc.common.exception.RpcSendRequestException;
 import com.ucar.rpc.common.exception.RpcTimeoutException;
+import com.ucar.rpc.common.exception.RpcTooMuchRequestException;
 import com.ucar.rpc.common.helper.RemotingHelper;
 import com.ucar.rpc.server.protocol.RpcRequestCommand;
 import com.ucar.rpc.server.protocol.RpcResponseCommand;
@@ -47,17 +49,19 @@ public class RpcClient implements RemotingClientService {
 
     private final RpcClientConfig rpcClientConfig;
 
-    protected final ConcurrentHashMap<Integer /* opaque */, ResponseFuture> responseTable =
-            new ConcurrentHashMap<Integer, ResponseFuture>(256);
+    // 信号量，异步调用情况会使用，防止本地Netty缓存请求过多
+    protected final Semaphore semaphoreAsync;
+
+    protected final ConcurrentHashMap<Integer /* opaque */, ResponseFuture> responseTable = new ConcurrentHashMap<Integer, ResponseFuture>(256);
 
     //链接缓存
     private final Lock lockChannelTables = new ReentrantLock();
     //链接相关的内容
-    private final ConcurrentHashMap<String /* addr */, ChannelWrapper> channelTables =
-            new ConcurrentHashMap<String, ChannelWrapper>();
+    private final ConcurrentHashMap<String /* addr */, ChannelWrapper> channelTables = new ConcurrentHashMap<String, ChannelWrapper>();
 
     public RpcClient(final RpcClientConfig rpcClientConfig) {
         this.rpcClientConfig = rpcClientConfig;
+        this.semaphoreAsync = new Semaphore(rpcClientConfig.getClientAsyncSemaphoreValue(), true);
         int publicThreadNums = rpcClientConfig.getClientCallbackExecutorThreads();
         if (publicThreadNums <= 0) {
             publicThreadNums = 4;
@@ -84,8 +88,8 @@ public class RpcClient implements RemotingClientService {
     @Override
     public void start() {
         final RpcClient instance = this;
-        this.defaultEventExecutorGroup = new DefaultEventExecutorGroup(//
-                rpcClientConfig.getClientWorkerThreads(), //
+        this.defaultEventExecutorGroup = new DefaultEventExecutorGroup(
+                rpcClientConfig.getClientWorkerThreads(),
                 new ThreadFactory() {
                     private AtomicInteger threadIndex = new AtomicInteger(0);
 
@@ -139,7 +143,7 @@ public class RpcClient implements RemotingClientService {
             throw new RpcConnectException(addr);
         }
         try {
-            final ResponseFuture responseFuture = new ResponseFuture(request.getOpaque(), timeoutMillis, null);
+            final ResponseFuture responseFuture = new ResponseFuture(request.getOpaque(), timeoutMillis, null, null);
             this.responseTable.put(request.getOpaque(), responseFuture);
             channel.writeAndFlush(request).addListener(new ChannelFutureListener() {
                 @Override
@@ -173,11 +177,58 @@ public class RpcClient implements RemotingClientService {
     }
 
     @Override
-    public void invokeAsync(String addr, RpcRequestCommand request, long timeoutMillis, InvokeCallback invokeCallback) throws InterruptedException, RpcConnectException, RpcTimeoutException, RpcSendRequestException {
+    public void invokeAsync(String addr, final RpcRequestCommand request, long timeoutMillis, InvokeCallback invokeCallback) throws InterruptedException, RpcConnectException, RpcTimeoutException, RpcSendRequestException, RpcTooMuchRequestException {
+        boolean acquired = this.semaphoreAsync.tryAcquire(timeoutMillis, TimeUnit.MILLISECONDS);
+        if (!acquired) {
+            if (timeoutMillis <= 0) {
+                throw new RpcTooMuchRequestException("invokeAsyncImpl invoke too fast");
+            } else {
+                String info = String.format(
+                        "invokeAsyncImpl tryAcquire semaphore timeout, %dms, waiting thread nums:%d semaphoreAsyncValue: %d",
+                        timeoutMillis,
+                        this.semaphoreAsync.getQueueLength(),
+                        this.semaphoreAsync.availablePermits(
+                        ));
+                logger.warn(info);
+                logger.warn(request.toString());
+                throw new RpcTimeoutException(info);
+            }
+        }
         final Channel channel = this.getAndCreateChannel(addr);
         if (channel == null || !channel.isActive()) {
             this.closeChannel(addr, channel);
             throw new RpcConnectException(addr);
+        }
+        final SemaphoreReleaseOnlyOnce once = new SemaphoreReleaseOnlyOnce(this.semaphoreAsync);
+        final ResponseFuture responseFuture = new ResponseFuture(request.getOpaque(), timeoutMillis, invokeCallback, once);
+        this.responseTable.put(request.getOpaque(), responseFuture);
+        try {
+            channel.writeAndFlush(request).addListener(new ChannelFutureListener() {
+                @Override
+                public void operationComplete(ChannelFuture f) throws Exception {
+                    if (f.isSuccess()) {
+                        responseFuture.setSendRequestOK(true);
+                        return;
+                    } else {
+                        responseFuture.setSendRequestOK(false);
+                    }
+                    responseFuture.putResponse(null);
+                    responseTable.remove(request.getOpaque());
+                    try {
+                        responseFuture.executeInvokeCallback();
+                    } catch (Throwable e) {
+                        logger.warn("excute callback in writeAndFlush addListener, and callback throw", e);
+                    } finally {
+                        responseFuture.release();
+                    }
+                    logger.warn("send a request command to channel <{}> failed.", RemotingHelper.parseChannelRemoteAddr(channel));
+                    logger.warn(request.toString());
+                }
+            });
+        } catch (Exception e) {
+            responseFuture.release();
+            logger.warn("send a request command to channel <" + RemotingHelper.parseChannelRemoteAddr(channel) + "> Exception", e);
+            throw new RpcSendRequestException(RemotingHelper.parseChannelRemoteAddr(channel), e);
         }
     }
 

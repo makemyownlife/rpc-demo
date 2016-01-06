@@ -49,10 +49,32 @@ public class RpcClientHandler extends ChannelInboundHandlerAdapter {
             if (responseFuture.getInvokeCallback() != null) {
                 boolean runInThisThread = false;
                 ExecutorService executor = rpcClient.getPublicExecutor();
-                if (executor == null) {
+                if (executor != null) {
+                    try {
+                        executor.submit(new Runnable() {
+                            @Override
+                            public void run() {
+                                try {
+                                    responseFuture.executeInvokeCallback();
+                                } catch (Throwable e) {
+                                    logger.warn("excute callback in executor exception, and callback throw", e);
+                                }
+                            }
+                        });
+                    } catch (Exception e) {
+                        runInThisThread = true;
+                        logger.warn("excute callback in executor exception, maybe executor busy", e);
+                    }
+                } else {
                     runInThisThread = true;
-                }else {
-
+                }
+                if (runInThisThread) {
+                    try {
+                        responseFuture.executeInvokeCallback();
+                    }
+                    catch (Throwable e) {
+                        logger.warn("executeInvokeCallback Exception", e);
+                    }
                 }
             } else {
                 responseFuture.putResponse(responseCommand);
