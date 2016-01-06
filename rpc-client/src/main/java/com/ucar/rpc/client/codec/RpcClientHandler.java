@@ -25,17 +25,12 @@ public class RpcClientHandler extends ChannelInboundHandlerAdapter {
     }
 
     @Override
-    public void channelInactive(ChannelHandlerContext ctx) throws Exception {
-        super.channelInactive(ctx);
-        ctx.channel().close();
-    }
-
-    @Override
     public void exceptionCaught(ChannelHandlerContext ctx, Throwable e)
             throws Exception {
         if (!(e.getCause() instanceof IOException)) {
             logger.error("catch some exception not IOException", e);
         }
+        rpcClient.closeChannel(ctx.channel());
         ctx.channel().close();
     }
 
