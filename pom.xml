@@ -11,9 +11,14 @@
     <name>rpc-all</name>
 
     <modules>
+        <!-- common包 -->
         <module>rpc-common</module>
+        <!-- sever以及协议的定义 -->
         <module>rpc-server</module>
+        <!-- 客户端 -->
         <module>rpc-client</module>
+        <!-- 客户端工厂 -->
+        <module>rpc-factory</module>
     </modules>
 
     <build>
