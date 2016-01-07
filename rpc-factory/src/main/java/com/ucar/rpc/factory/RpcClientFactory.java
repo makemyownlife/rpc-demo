@@ -1,5 +1,7 @@
 package com.ucar.rpc.factory;
 
+import com.ucar.rpc.common.exception.RpcFactoryException;
+
 /**
  * rpc 客户端工厂
  * User: zhangyong
@@ -9,6 +11,6 @@ package com.ucar.rpc.factory;
  */
 public interface RpcClientFactory {
 
-    public Object execute(String serviceId, Object... objects);
+    public Object execute(String serviceId, Object... objects) throws RpcFactoryException;
 
 }
