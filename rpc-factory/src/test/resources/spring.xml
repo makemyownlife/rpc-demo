@@ -1,0 +1,28 @@
+<?xml version="1.0" encoding="utf-8"?>
+<beans xmlns="http://www.springframework.org/schema/beans"
+       xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+       xsi:schemaLocation="http://www.springframework.org/schema/beans
+      http://www.springframework.org/schema/beans/spring-beans-3.1.xsd">
+
+    <!-- rpc 客户端 -->
+    <bean id="rpcClientConfig" class="com.ucar.rpc.client.netty.RpcClientConfig"></bean>
+
+    <bean id="rpcClient" class="com.ucar.rpc.client.netty.RpcClient">
+        <constructor-arg index="0" ref="rpcClientConfig"/>
+    </bean>
+
+    <!-- rpc 服务 -->
+    <bean id="rpcServerConfig" class="com.ucar.rpc.server.netty.RpcServerConfig"></bean>
+
+    <bean id="springBeanLocator" class="com.ucar.rpc.factory.impl.SpringBeanLocator"></bean>
+
+    <bean id="rpcServer" class="com.ucar.rpc.server.netty.RpcServer">
+        <constructor-arg index="0" ref="rpcServerConfig"/>
+        <constructor-arg index="1" ref="springBeanLocator"/>
+    </bean>
+
+    <!-- cluster 配置 -->
+    <bean id="serviceNameFinder" class="com.ucar.rpc.factory.impl.ZkServiceNameFinder">
+    </bean>
+
+</beans>
