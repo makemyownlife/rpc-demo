@@ -1,4 +1,6 @@
-package com.ucar.rpc.common.exception;
+package com.ucar.rpc.factory.exception;
+
+import com.ucar.rpc.common.exception.RpcException;
 
 /**
  * Created by zhangyong on 16/1/7.
