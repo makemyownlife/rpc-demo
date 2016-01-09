@@ -5,7 +5,8 @@
       http://www.springframework.org/schema/beans/spring-beans-3.1.xsd">
 
     <!-- rpc 客户端 -->
-    <bean id="rpcClientConfig" class="com.ucar.rpc.client.netty.RpcClientConfig"></bean>
+    <bean id="rpcClientConfig" class="com.ucar.rpc.client.netty.RpcClientConfig">
+    </bean>
 
     <bean id="rpcClient" class="com.ucar.rpc.client.netty.RpcClient">
         <constructor-arg index="0" ref="rpcClientConfig"/>
@@ -22,7 +23,18 @@
     </bean>
 
     <!-- cluster 配置 -->
-    <bean id="serviceNameFinder" class="com.ucar.rpc.factory.impl.ZkServiceNameFinder">
+    <bean id="serviceNameRegister" class="com.ucar.rpc.factory.impl.ZkServiceNameRegister">
+    </bean>
+
+    <bean id="clientFactory" class="com.ucar.rpc.factory.impl.DefaultRpcClientFactory">
+        <property name="rpcClient" ref="rpcClient"/>
+        <property name="serviceNameRegister" ref="serviceNameRegister"/>
+    </bean>
+
+    <bean id="rpcEntrance" class="com.ucar.rpc.factory.RpcEntrance" init-method="start" destroy-method="shutdown">
+        <property name="serviceNameRegister" ref="serviceNameRegister"/>
+        <property name="rpcClient" ref="rpcClient"/>
+        <property name="rpcServer" ref="rpcServer"/>
     </bean>
 
 </beans>
