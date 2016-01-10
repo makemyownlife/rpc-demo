@@ -19,7 +19,7 @@ public class RpcEntrance {
 
     private ServiceNameRegister serviceNameRegister;
 
-    public void start() {
+    public void start() throws Exception {
         logger.info("开始启动rpc入口");
         long start = System.currentTimeMillis();
         //启动客户端初始化
@@ -31,7 +31,7 @@ public class RpcEntrance {
         logger.info("结束启动rpc入口...costtime:{} ms", System.currentTimeMillis() - start);
     }
 
-    public void shutdown() {
+    public void shutdown() throws Exception {
         logger.info("开始关闭rpc入口");
         long start = System.currentTimeMillis();
         //取消服务注册

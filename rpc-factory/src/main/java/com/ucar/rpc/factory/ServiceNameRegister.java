@@ -5,8 +5,8 @@ package com.ucar.rpc.factory;
  */
 public interface ServiceNameRegister {
 
-    public void registerService();
+    public void registerService() throws Exception;
 
-    public void unRegisterService();
+    public void unRegisterService() throws Exception;
 
 }

@@ -22,8 +22,18 @@
         <constructor-arg index="1" ref="springBeanLocator"/>
     </bean>
 
+    <bean id="zkServiceNameConfig" class="com.ucar.rpc.factory.impl.ZkServiceNameConfig">
+        <!-- 独立的节点 -->
+        <property name="clusterNode" value="myClusterNode"/>
+        <!--  根目录 -->
+        <property name="zkClusterRoot" value="/cluster"/>
+        <!--  zk主机 -->
+        <property name="zkHosts" value="localhost:2181"/>
+    </bean>
+
     <!-- cluster 配置 -->
     <bean id="serviceNameRegister" class="com.ucar.rpc.factory.impl.ZkServiceNameRegister">
+        <property name="zkServiceNameConfig" ref="zkServiceNameConfig"/>
     </bean>
 
     <bean id="clientFactory" class="com.ucar.rpc.factory.impl.DefaultRpcClientFactory">
