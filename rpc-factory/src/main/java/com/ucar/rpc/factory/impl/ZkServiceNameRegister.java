@@ -1,7 +1,9 @@
 package com.ucar.rpc.factory.impl;
 
+import com.ucar.rpc.common.RemotingUtil;
 import com.ucar.rpc.factory.ServiceNameRegister;
 import com.ucar.rpc.factory.utils.ZkUtils;
+import com.ucar.rpc.server.netty.RpcServerConfig;
 import org.I0Itec.zkclient.ZkClient;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -17,6 +19,8 @@ public class ZkServiceNameRegister implements ServiceNameRegister {
 
     private ZkServiceNameConfig zkServiceNameConfig;
 
+    private RpcServerConfig rpcServerConfig;
+
     @Override
     public void registerService() throws Exception {
         logger.info("开始在集群中注册该节点:{} ", zkServiceNameConfig.getClusterNode());
@@ -26,14 +30,30 @@ public class ZkServiceNameRegister implements ServiceNameRegister {
         //确认当前服务的节点
         ZkUtils.makeSurePersistentPathExists(zkClient, zkServiceNameConfig.getZkClusterRoot() + "/" + zkServiceNameConfig.getClusterNode());
         //创建临时节点
+        String clusterId = RemotingUtil.getLocalAddress() + ":" + rpcServerConfig.getListenPort();
+        String clusterEphemeralPath = zkServiceNameConfig.getZkClusterRoot() + "/" + zkServiceNameConfig.getClusterNode() + "/" + clusterId;
+        logger.info("创建临时节点: {}", clusterEphemeralPath);
+        ZkUtils.createEphemeralPath(zkClient,clusterEphemeralPath,null);
     }
 
     @Override
     public void unRegisterService() throws Exception {
+        if(zkClient != null) {
+            zkClient.close();
+        }
+    }
 
+    @Override
+    public String getRegisterAdress(String serviceId) {
+        return null;
     }
 
     public void setZkServiceNameConfig(ZkServiceNameConfig zkServiceNameConfig) {
         this.zkServiceNameConfig = zkServiceNameConfig;
     }
+
+    public void setRpcServerConfig(RpcServerConfig rpcServerConfig) {
+        this.rpcServerConfig = rpcServerConfig;
+    }
+
 }

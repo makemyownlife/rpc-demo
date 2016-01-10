@@ -34,6 +34,7 @@
     <!-- cluster 配置 -->
     <bean id="serviceNameRegister" class="com.ucar.rpc.factory.impl.ZkServiceNameRegister">
         <property name="zkServiceNameConfig" ref="zkServiceNameConfig"/>
+        <property name="rpcServerConfig" ref="rpcServerConfig" />
     </bean>
 
     <bean id="clientFactory" class="com.ucar.rpc.factory.impl.DefaultRpcClientFactory">
