@@ -29,7 +29,7 @@ public class DefaultRpcClientFactory implements RpcClientFactory {
         if(serviceNameRegister == null) {
             throw new RpcFactoryException("cant find serviceNameFinder");
         }
-        String address = serviceNameRegister.getRegisterAdress(serviceId);
+        String address = null;
         if(address == null) {
             throw new RpcServiceNameRegisterException("cant find serviceId :" + serviceId + " address");
         }

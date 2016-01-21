@@ -31,13 +31,14 @@ public class ZkServiceNameRegister implements ServiceNameRegister {
         //确认根目录存在
         ZkUtils.makeSurePersistentPathExists(zkClient, zkServiceNameConfig.getZkClusterRoot());
         //确认当前服务的节点
-        ZkUtils.makeSurePersistentPathExists(zkClient, zkServiceNameConfig.getZkClusterRoot() + "/" + zkServiceNameConfig.getClusterNode());
+        String moduleNode = zkServiceNameConfig.getZkClusterRoot() + "/" + zkServiceNameConfig.getClusterNode();
+        ZkUtils.makeSurePersistentPathExists(zkClient, moduleNode);
         //创建临时节点
         String clusterId = RemotingUtil.getLocalAddress() + ":" + rpcServerConfig.getListenPort();
-        String clusterEphemeralPath = zkServiceNameConfig.getZkClusterRoot() + "/" + zkServiceNameConfig.getClusterNode() + "/" + clusterId;
-        logger.info("创建临时节点: {}", clusterEphemeralPath);
-        ZkUtils.createEphemeralPath(zkClient, clusterEphemeralPath, null);
-        zkClient.subscribeChildChanges(clusterEphemeralPath, zkServiceNameCacheListener);
+        String clusterEphemeralPath = moduleNode + "/" + clusterId;
+        logger.info("模块:{} 创建临时节点:{}", zkServiceNameConfig.getClusterNode(), clusterEphemeralPath);
+        zkClient.subscribeChildChanges(moduleNode, zkServiceNameCacheListener);
+        ZkUtils.createEphemeralPathExpectConflict(zkClient, clusterEphemeralPath, null);
     }
 
     @Override
@@ -47,11 +48,6 @@ public class ZkServiceNameRegister implements ServiceNameRegister {
         }
     }
 
-    @Override
-    public String getRegisterAdress(String serviceId) {
-        return null;
-    }
-
     public void setZkServiceNameConfig(ZkServiceNameConfig zkServiceNameConfig) {
         this.zkServiceNameConfig = zkServiceNameConfig;
     }
@@ -59,6 +55,5 @@ public class ZkServiceNameRegister implements ServiceNameRegister {
     public void setRpcServerConfig(RpcServerConfig rpcServerConfig) {
         this.rpcServerConfig = rpcServerConfig;
     }
-
 
 }

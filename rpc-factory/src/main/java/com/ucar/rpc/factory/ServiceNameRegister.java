@@ -5,12 +5,10 @@ package com.ucar.rpc.factory;
  */
 public interface ServiceNameRegister {
 
-    //初始化方法(仅执行一次)
+    //初始化方法
     public void registerService() throws Exception;
 
-    //关闭时调用(仅执行一次)
+    //关闭时调用
     public void unRegisterService() throws Exception;
-
-    public String getRegisterAdress(String serviceId);
 
 }
