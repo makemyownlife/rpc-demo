@@ -21,10 +21,13 @@ public class ZkServiceNameRegister implements ServiceNameRegister {
 
     private RpcServerConfig rpcServerConfig;
 
+    private ZkServiceNameCacheListener zkServiceNameCacheListener;
+
     @Override
     public void registerService() throws Exception {
         logger.info("开始在集群中注册该节点:{} ", zkServiceNameConfig.getClusterNode());
-        zkClient = new ZkClient(zkServiceNameConfig.getZkHosts(), zkServiceNameConfig.getZkSessionTimeout(), zkServiceNameConfig.getZkConnectTimeout(), new ZkUtils.StringSerializer());
+        this.zkClient = new ZkClient(zkServiceNameConfig.getZkHosts(), zkServiceNameConfig.getZkSessionTimeout(), zkServiceNameConfig.getZkConnectTimeout(), new ZkUtils.StringSerializer());
+        this.zkServiceNameCacheListener = new ZkServiceNameCacheListener();
         //确认根目录存在
         ZkUtils.makeSurePersistentPathExists(zkClient, zkServiceNameConfig.getZkClusterRoot());
         //确认当前服务的节点
@@ -33,12 +36,13 @@ public class ZkServiceNameRegister implements ServiceNameRegister {
         String clusterId = RemotingUtil.getLocalAddress() + ":" + rpcServerConfig.getListenPort();
         String clusterEphemeralPath = zkServiceNameConfig.getZkClusterRoot() + "/" + zkServiceNameConfig.getClusterNode() + "/" + clusterId;
         logger.info("创建临时节点: {}", clusterEphemeralPath);
-        ZkUtils.createEphemeralPath(zkClient,clusterEphemeralPath,null);
+        ZkUtils.createEphemeralPath(zkClient, clusterEphemeralPath, null);
+        zkClient.subscribeChildChanges(clusterEphemeralPath, zkServiceNameCacheListener);
     }
 
     @Override
     public void unRegisterService() throws Exception {
-        if(zkClient != null) {
+        if (zkClient != null) {
             zkClient.close();
         }
     }
@@ -55,5 +59,6 @@ public class ZkServiceNameRegister implements ServiceNameRegister {
     public void setRpcServerConfig(RpcServerConfig rpcServerConfig) {
         this.rpcServerConfig = rpcServerConfig;
     }
+
 
 }

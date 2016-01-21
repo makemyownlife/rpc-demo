@@ -20,7 +20,11 @@ public class RpcFacotryUnitTest {
     @Test
     public void testServiceFinder() {
         RpcClientFactory rpcClientFactory = (RpcClientFactory) context.getBean("clientFactory");
+        try {
+            Thread.sleep(100000);
+        } catch (InterruptedException e) {
+            e.printStackTrace();
+        }
     }
-
 
 }

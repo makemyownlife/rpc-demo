@@ -7,7 +7,7 @@ public class ZkServiceNameConfig {
 
     private String zkHosts;
 
-    private int zkConnectTimeout = 5000;
+    private int zkConnectTimeout = 15000;
 
     private int zkSessionTimeout = 30000;
 
