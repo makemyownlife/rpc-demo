@@ -27,7 +27,7 @@ public class RpcEntrance {
         //启动服务
         rpcServer.start();
         //启动服务注册
-        serviceNameRegister.registerService();
+        serviceNameRegister.start();
         logger.info("结束启动rpc入口...costtime:{} ms", System.currentTimeMillis() - start);
     }
 
@@ -35,7 +35,7 @@ public class RpcEntrance {
         logger.info("开始关闭rpc入口");
         long start = System.currentTimeMillis();
         //取消服务注册
-        serviceNameRegister.unRegisterService();
+        serviceNameRegister.shutdown();
         //关闭服务
         rpcServer.shutdown();
         //关闭客户端

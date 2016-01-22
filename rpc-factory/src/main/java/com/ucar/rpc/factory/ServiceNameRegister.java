@@ -6,9 +6,12 @@ package com.ucar.rpc.factory;
 public interface ServiceNameRegister {
 
     //初始化方法
-    public void registerService() throws Exception;
+    public void start() throws Exception;
 
     //关闭时调用
-    public void unRegisterService() throws Exception;
+    public void shutdown() throws Exception;
+
+    //得到服务列表
+    public ServiceNameCache getServiceNameCache();
 
 }
