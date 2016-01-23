@@ -13,4 +13,6 @@ public interface ServiceNameCache {
 
     public RemoteServiceBean getRemoteServiceById(String serviceId);
 
+    public String getRemoteAddressById(String serviceId);
+
 }

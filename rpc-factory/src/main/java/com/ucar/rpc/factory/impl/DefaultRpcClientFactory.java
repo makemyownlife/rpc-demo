@@ -11,11 +11,15 @@ import com.ucar.rpc.factory.bean.RemoteServiceBean;
 import com.ucar.rpc.factory.exception.RpcFactoryException;
 import com.ucar.rpc.factory.exception.RpcServiceNameRegisterException;
 import com.ucar.rpc.server.protocol.RpcRequestCommand;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 /**
  * Created by zhangyong on 16/1/7.
  */
 public class DefaultRpcClientFactory implements RpcClientFactory {
+
+    private final static Logger logger = LoggerFactory.getLogger(DefaultRpcClientFactory.class);
 
     private RpcClient rpcClient;
 
@@ -32,15 +36,19 @@ public class DefaultRpcClientFactory implements RpcClientFactory {
     @Override
     public Object execute(String serviceId, Object... objects) throws RpcFactoryException, RpcServiceNameRegisterException, InterruptedException, RpcConnectException, RpcSendRequestException, RpcTimeoutException {
         if (serviceNameRegister == null) {
-            throw new RpcFactoryException("cant find serviceNameFinder");
+            throw new RpcFactoryException("can't find serviceNameFinder");
         }
         ServiceNameCache serviceNameCache = serviceNameRegister.getServiceNameCache();
         RemoteServiceBean remoteServiceBean = serviceNameCache.getRemoteServiceById(serviceId);
+        if (remoteServiceBean == null) {
+            logger.error("can't find serviceId:{} may be you should register first ", serviceId);
+            throw new RpcServiceNameRegisterException("can't getRemoteServiceById :" + serviceId);
+        }
         String address = null;
         if (address == null) {
-            throw new RpcServiceNameRegisterException("cant find serviceId :" + serviceId + " address");
+            throw new RpcServiceNameRegisterException("can't find serviceId :" + serviceId + " address");
         }
-        RpcRequestCommand requestCommand = new RpcRequestCommand(remoteServiceBean.getBeanName(), remoteServiceBean.getMethodName(),objects);
+        RpcRequestCommand requestCommand = new RpcRequestCommand(remoteServiceBean.getBeanName(), remoteServiceBean.getMethodName(), objects);
         return rpcClient.invokeSync(address, requestCommand, remoteServiceBean.getInvokeTime());
     }
 

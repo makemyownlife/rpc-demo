@@ -72,6 +72,10 @@ public class ZkServiceNameCache implements ServiceNameCache {
         return null;
     }
 
+    public String getRemoteAddressById(String serviceId) {
+        return null;
+    }
+
     public class ZkServiceNameCacheListener implements IZkChildListener {
         @Override
         public void handleChildChange(String parentPath, List<String> currentChilds) throws Exception {
