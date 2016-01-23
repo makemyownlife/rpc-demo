@@ -1,6 +1,9 @@
 package com.ucar.rpc.factory;
 
 
+import com.ucar.rpc.common.exception.RpcConnectException;
+import com.ucar.rpc.common.exception.RpcSendRequestException;
+import com.ucar.rpc.common.exception.RpcTimeoutException;
 import com.ucar.rpc.factory.exception.RpcFactoryException;
 import com.ucar.rpc.factory.exception.RpcServiceNameRegisterException;
 
@@ -13,7 +16,7 @@ import com.ucar.rpc.factory.exception.RpcServiceNameRegisterException;
  */
 public interface RpcClientFactory {
 
-    public Object execute(String serviceId, Object... objects) throws RpcFactoryException, RpcServiceNameRegisterException;
+    public Object execute(String serviceId, Object... objects) throws RpcFactoryException, RpcServiceNameRegisterException, InterruptedException, RpcConnectException, RpcSendRequestException, RpcTimeoutException;
 
     public Object execute(String address, String serviceId, Object... objects) throws RpcFactoryException;
 

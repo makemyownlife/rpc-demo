@@ -1,5 +1,7 @@
 package com.ucar.rpc.factory;
 
+import com.ucar.rpc.factory.bean.RemoteServiceBean;
+
 /**
  * Created with IntelliJ IDEA.
  * User: zhangyong
@@ -9,6 +11,6 @@ package com.ucar.rpc.factory;
  */
 public interface ServiceNameCache {
 
-
+    public RemoteServiceBean getRemoteServiceById(String serviceId);
 
 }

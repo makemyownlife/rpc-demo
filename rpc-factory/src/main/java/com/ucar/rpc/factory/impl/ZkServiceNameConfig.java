@@ -15,6 +15,8 @@ public class ZkServiceNameConfig {
 
     private String clusterNode;
 
+    private String zkRemoteServiceRoot;
+
     public String getZkHosts() {
         return zkHosts;
     }
@@ -53,6 +55,14 @@ public class ZkServiceNameConfig {
 
     public String getZkClusterRoot() {
         return zkClusterRoot;
+    }
+
+    public String getZkRemoteServiceRoot() {
+        return zkRemoteServiceRoot;
+    }
+
+    public void setZkRemoteServiceRoot(String zkRemoteServiceRoot) {
+        this.zkRemoteServiceRoot = zkRemoteServiceRoot;
     }
 
 }

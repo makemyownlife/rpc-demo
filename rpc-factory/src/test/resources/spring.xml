@@ -23,18 +23,20 @@
     </bean>
 
     <bean id="zkServiceNameConfig" class="com.ucar.rpc.factory.impl.ZkServiceNameConfig">
-        <!-- 独立的节点 -->
+        <!-- 独立的模块节点 -->
         <property name="clusterNode" value="cdms"/>
         <!--  根目录 -->
         <property name="zkClusterRoot" value="/cluster"/>
+        <!--  zk 远程服务的节点 -->
+        <property name="zkRemoteServiceRoot" value="/remoteService"/>
         <!--  zk主机 -->
-        <property name="zkHosts" value="10.100.19.144:2181"/>
+        <property name="zkHosts" value="localhost:2181"/>
     </bean>
 
     <!-- cluster 配置 -->
     <bean id="serviceNameRegister" class="com.ucar.rpc.factory.impl.ZkServiceNameRegister">
         <property name="zkServiceNameConfig" ref="zkServiceNameConfig"/>
-        <property name="rpcServerConfig" ref="rpcServerConfig" />
+        <property name="rpcServerConfig" ref="rpcServerConfig"/>
     </bean>
 
     <bean id="clientFactory" class="com.ucar.rpc.factory.impl.DefaultRpcClientFactory">

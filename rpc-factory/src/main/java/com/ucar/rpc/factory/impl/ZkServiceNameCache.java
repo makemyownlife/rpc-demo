@@ -2,6 +2,7 @@ package com.ucar.rpc.factory.impl;
 
 import com.ucar.rpc.common.RemotingUtil;
 import com.ucar.rpc.factory.ServiceNameCache;
+import com.ucar.rpc.factory.bean.RemoteServiceBean;
 import com.ucar.rpc.factory.utils.ZkUtils;
 import com.ucar.rpc.server.netty.RpcServerConfig;
 import org.I0Itec.zkclient.IZkChildListener;
@@ -35,26 +36,40 @@ public class ZkServiceNameCache implements ServiceNameCache {
 
     private ReadWriteLock readWriteLock;
 
+    private ZkServiceNameCacheListener zkServiceNameCacheListener;
+
     public ZkServiceNameCache(ZkServiceNameConfig zkServiceNameConfig, RpcServerConfig rpcServerConfig) {
         this.serverCache = new ConcurrentHashMap<String, List<String>>();
         this.readWriteLock = new ReentrantReadWriteLock();
-        logger.info("开始在集群中注册该节点:{} ", zkServiceNameConfig.getClusterNode());
+        this.zkServiceNameConfig = zkServiceNameConfig;
+        this.rpcServerConfig = rpcServerConfig;
+        this.zkServiceNameCacheListener = new ZkServiceNameCacheListener();
+        this.initModule();
     }
 
-    private void init() throws Exception {
-        this.zkClient = new ZkClient(zkServiceNameConfig.getZkHosts(), zkServiceNameConfig.getZkSessionTimeout(), zkServiceNameConfig.getZkConnectTimeout(), new ZkUtils.StringSerializer());
-        //确认根目录存在
-        ZkUtils.makeSurePersistentPathExists(zkClient, zkServiceNameConfig.getZkClusterRoot());
-        //确认当前服务的节点
-        String moduleNode = zkServiceNameConfig.getZkClusterRoot() + "/" + zkServiceNameConfig.getClusterNode();
-        ZkUtils.makeSurePersistentPathExists(zkClient, moduleNode);
-        //创建临时节点
-        String clusterId = RemotingUtil.getLocalAddress() + ":" + rpcServerConfig.getListenPort();
-        String clusterEphemeralPath = moduleNode + "/" + clusterId;
-        logger.info("模块:{} 创建临时节点:{}", zkServiceNameConfig.getClusterNode(), clusterEphemeralPath);
-        ZkServiceNameCacheListener zkServiceNameCacheListener = new ZkServiceNameCacheListener();
-        zkClient.subscribeChildChanges(moduleNode, zkServiceNameCacheListener);
-        ZkUtils.createEphemeralPathExpectConflict(zkClient, clusterEphemeralPath, null);
+    private synchronized void initModule() {
+        logger.info("开始在集群中注册该节点:{} ", zkServiceNameConfig.getClusterNode());
+        try {
+            this.zkClient = new ZkClient(zkServiceNameConfig.getZkHosts(), zkServiceNameConfig.getZkSessionTimeout(), zkServiceNameConfig.getZkConnectTimeout(), new ZkUtils.StringSerializer());
+            //确认根目录存在
+            ZkUtils.makeSurePersistentPathExists(zkClient, zkServiceNameConfig.getZkClusterRoot());
+            //确认当前服务的节点
+            String moduleNode = zkServiceNameConfig.getZkClusterRoot() + "/" + zkServiceNameConfig.getClusterNode();
+            ZkUtils.makeSurePersistentPathExists(zkClient, moduleNode);
+            //创建临时节点
+            String clusterId = RemotingUtil.getLocalAddress() + ":" + rpcServerConfig.getListenPort();
+            String clusterEphemeralPath = moduleNode + "/" + clusterId;
+            logger.info("模块:{} 创建临时节点:{}", zkServiceNameConfig.getClusterNode(), clusterEphemeralPath);
+            zkClient.subscribeChildChanges(moduleNode, zkServiceNameCacheListener);
+            ZkUtils.createEphemeralPathExpectConflict(zkClient, clusterEphemeralPath, null);
+        } catch (Exception e) {
+            logger.error("init error:", e);
+        }
+    }
+
+    @Override
+    public RemoteServiceBean getRemoteServiceById(String serviceId) {
+        return null;
     }
 
     public class ZkServiceNameCacheListener implements IZkChildListener {
