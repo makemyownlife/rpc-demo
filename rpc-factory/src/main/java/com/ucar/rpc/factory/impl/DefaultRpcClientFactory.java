@@ -44,7 +44,7 @@ public class DefaultRpcClientFactory implements RpcClientFactory {
             logger.error("can't find serviceId:{} may be you should register first ", serviceId);
             throw new RpcServiceNameRegisterException("can't getRemoteServiceById :" + serviceId);
         }
-        String address = null;
+        String address = serviceNameCache.getRemoteAddressById(serviceId);
         if (address == null) {
             throw new RpcServiceNameRegisterException("can't find serviceId :" + serviceId + " address");
         }
@@ -53,7 +53,7 @@ public class DefaultRpcClientFactory implements RpcClientFactory {
     }
 
     @Override
-    public Object execute(String address, String serviceId, Object... objects) throws RpcFactoryException {
+    public Object executeUrl(String address, String serviceId, Object... objects) throws RpcFactoryException, RpcServiceNameRegisterException, InterruptedException, RpcConnectException, RpcSendRequestException, RpcTimeoutException {
         return null;
     }
 

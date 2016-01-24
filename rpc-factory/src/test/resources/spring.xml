@@ -30,7 +30,7 @@
         <!--  zk 远程服务的节点 -->
         <property name="zkRemoteServiceRoot" value="/remoteService"/>
         <!--  zk主机 -->
-        <property name="zkHosts" value="localhost:2181"/>
+        <property name="zkHosts" value="10.100.19.144:2181"/>
     </bean>
 
     <!-- cluster 配置 -->
