@@ -10,7 +10,9 @@ import com.ucar.rpc.factory.ServiceNameRegister;
 import com.ucar.rpc.factory.bean.RemoteServiceBean;
 import com.ucar.rpc.factory.exception.RpcFactoryException;
 import com.ucar.rpc.factory.exception.RpcServiceNameRegisterException;
+import com.ucar.rpc.server.protocol.ResponseStatus;
 import com.ucar.rpc.server.protocol.RpcRequestCommand;
+import com.ucar.rpc.server.protocol.RpcResponseCommand;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -49,11 +51,19 @@ public class DefaultRpcClientFactory implements RpcClientFactory {
             throw new RpcServiceNameRegisterException("can't find serviceId :" + serviceId + " address");
         }
         RpcRequestCommand requestCommand = new RpcRequestCommand(remoteServiceBean.getBeanName(), remoteServiceBean.getMethodName(), objects);
-        return rpcClient.invokeSync(address, requestCommand, remoteServiceBean.getInvokeTime());
+        RpcResponseCommand rpcResponseCommand = rpcClient.invokeSync(address, requestCommand, remoteServiceBean.getInvokeTime());
+        if (rpcResponseCommand == null) {
+            throw new RpcFactoryException("can't get response from serviceId: " + serviceId + " target address:" + address);
+        }
+        if (rpcResponseCommand.getResponseStatus() != ResponseStatus.NO_ERROR) {
+            throw new RpcFactoryException("already get response from serviceId: " + serviceId + " target address:" + address + " but status is wrong ,responsevalue:" + rpcResponseCommand.getResponseStatus());
+        }
+        return rpcResponseCommand.getResult();
     }
 
     @Override
     public Object executeUrl(String address, String serviceId, Object... objects) throws RpcFactoryException, RpcServiceNameRegisterException, InterruptedException, RpcConnectException, RpcSendRequestException, RpcTimeoutException {
+        //暂时略去
         return null;
     }
 

@@ -47,7 +47,8 @@ public class RpcFacotryUnitTest {
     @Test
     public void testServiceFinder() throws InterruptedException, RpcServiceNameRegisterException, RpcTimeoutException, RpcConnectException, RpcSendRequestException, RpcFactoryException {
         RpcClientFactory rpcClientFactory = (RpcClientFactory) context.getBean("clientFactory");
-        rpcClientFactory.execute(serviceId, "zhangyong");
+        Object object = rpcClientFactory.execute(serviceId, "zhangyong");
+        System.out.println(object);
     }
 
 }

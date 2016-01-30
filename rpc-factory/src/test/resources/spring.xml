@@ -50,4 +50,7 @@
         <property name="rpcServer" ref="rpcServer"/>
     </bean>
 
+    <!-- bean 定义 -->
+    <bean id="hello" class="com.ucar.rpc.factory.example.HelloBean"></bean>
+
 </beans>

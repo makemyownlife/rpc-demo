@@ -114,7 +114,7 @@ public class ZkServiceNameCache implements ServiceNameCache {
     public String getRemoteAddressById(String serviceId) {
         String[] arr = serviceId.split("\\.");
         String module = arr[0];
-        String zkModuleNode = zkServiceNameConfig.getZkRemoteServiceRoot() + "/" + module;
+        String zkModuleNode = zkServiceNameConfig.getZkClusterRoot() + "/" + module;
         List<String> serverList = serverCache.get(module);
         if (serverList == null) {
             Lock writeLock = serverCacheLock.writeLock();
