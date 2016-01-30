@@ -24,10 +24,10 @@ public class RpcFacotryUnitTest {
 
     private ApplicationContext context;
 
-    String serviceId = "cdms.sayHello";
+    private String serviceId = "cdms.sayHello";
 
     public void createModuleRemoteService() throws Exception {
-        ZkClient zkClient = new ZkClient("10.100.19.144:2181", 30000, 150000, new ZkUtils.StringSerializer());
+        ZkClient zkClient = new ZkClient("localhost:2181", 30000, 150000, new ZkUtils.StringSerializer());
         List list = new ArrayList();
         RemoteServiceBean remoteServiceBean = new RemoteServiceBean();
         remoteServiceBean.setBeanName("hello");

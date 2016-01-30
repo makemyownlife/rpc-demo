@@ -6,6 +6,7 @@ import com.ucar.rpc.factory.ServiceNameCache;
 import com.ucar.rpc.factory.bean.RemoteServiceBean;
 import com.ucar.rpc.factory.utils.ZkUtils;
 import com.ucar.rpc.server.netty.RpcServerConfig;
+import org.I0Itec.zkclient.IZkChildListener;
 import org.I0Itec.zkclient.IZkDataListener;
 import org.I0Itec.zkclient.ZkClient;
 import org.slf4j.Logger;
@@ -16,6 +17,7 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
+import java.util.concurrent.atomic.AtomicInteger;
 import java.util.concurrent.locks.Lock;
 import java.util.concurrent.locks.ReadWriteLock;
 import java.util.concurrent.locks.ReentrantReadWriteLock;
@@ -52,10 +54,17 @@ public class ZkServiceNameCache implements ServiceNameCache {
     //远程服务节点监听
     private ZkRemoteServiceListener zkRemoteServiceListener;
 
+    //模块机器监听
+    private ZkServerListListener zkServerListListener;
+
+    //轮询方式
+    private AtomicInteger robbinPos = new AtomicInteger(0);
+
     public ZkServiceNameCache(ZkServiceNameConfig zkServiceNameConfig, RpcServerConfig rpcServerConfig) {
         this.zkServiceNameConfig = zkServiceNameConfig;
         this.rpcServerConfig = rpcServerConfig;
         this.zkRemoteServiceListener = new ZkRemoteServiceListener();
+        this.zkServerListListener = new ZkServerListListener();
         this.initModule();
     }
 
@@ -92,6 +101,8 @@ public class ZkServiceNameCache implements ServiceNameCache {
                 if (moduleRemoteServices == null) {
                     return null;
                 }
+                //添加监听器
+                zkClient.subscribeDataChanges(zkModuleNode, zkRemoteServiceListener);
                 remoteServiceCache.put(module, moduleRemoteServices);
             } finally {
                 writeLock.unlock();
@@ -101,7 +112,34 @@ public class ZkServiceNameCache implements ServiceNameCache {
     }
 
     public String getRemoteAddressById(String serviceId) {
-        return null;
+        String[] arr = serviceId.split("\\.");
+        String module = arr[0];
+        String zkModuleNode = zkServiceNameConfig.getZkRemoteServiceRoot() + "/" + module;
+        List<String> serverList = serverCache.get(module);
+        if (serverList == null) {
+            Lock writeLock = serverCacheLock.writeLock();
+            try {
+                writeLock.lock();
+                serverList = zkClient.getChildren(zkModuleNode);
+                //添加监听器
+                zkClient.subscribeChildChanges(zkModuleNode, zkServerListListener);
+                //添加到本地缓存中
+                serverCache.put(module, serverList);
+            } finally {
+                writeLock.unlock();
+            }
+        }
+        if (CollectionUtils.isEmpty(serverList)) {
+            return null;
+        }
+        //roundbin方式
+        synchronized (robbinPos) {
+            if (robbinPos.get() > serverList.size()) {
+                robbinPos.set(0);
+            }
+            String server = serverList.get(robbinPos.getAndIncrement());
+            return server;
+        }
     }
 
     private Map<String, RemoteServiceBean> parseModuleRemoteService(String zkModuleRemoteService) {
@@ -118,12 +156,23 @@ public class ZkServiceNameCache implements ServiceNameCache {
     }
 
     public class ZkRemoteServiceListener implements IZkDataListener {
+
         @Override
         public void handleDataChange(String dataPath, Object data) throws Exception {
+            logger.info("dataPath:{} data:{}", dataPath, data);
         }
 
         @Override
         public void handleDataDeleted(String dataPath) throws Exception {
+            logger.info("handleDataDeleted:{} data:{}", dataPath);
+        }
+
+    }
+
+    public class ZkServerListListener implements IZkChildListener {
+        @Override
+        public void handleChildChange(String parentPath, List<String> currentChilds) throws Exception {
+            logger.info("parentPath:{}", currentChilds);
         }
     }
 
