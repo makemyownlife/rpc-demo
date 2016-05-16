@@ -13,13 +13,13 @@ import com.ucar.rpc.server.protocol.RpcResponseCommand;
  */
 public interface RemotingClientService extends RemotingService {
 
-    public RpcResponseCommand invokeSync(final String addr,
-                                         final RpcRequestCommand request,
-                                         final long timeoutMillis) throws InterruptedException, RpcConnectException, RpcTimeoutException, RpcSendRequestException;
+    RpcResponseCommand invokeSync(final String addr,
+                                  final RpcRequestCommand request,
+                                  final long timeoutMillis) throws InterruptedException, RpcConnectException, RpcTimeoutException, RpcSendRequestException;
 
-    public void invokeAsync(final String addr,
-                                          final RpcRequestCommand request,
-                                          final long timeoutMillis,
-                                          final InvokeCallback invokeCallback) throws InterruptedException, RpcConnectException, RpcTimeoutException, RpcSendRequestException, RpcTooMuchRequestException;
+    void invokeAsync(final String addr,
+                     final RpcRequestCommand request,
+                     final long timeoutMillis,
+                     final InvokeCallback invokeCallback) throws InterruptedException, RpcConnectException, RpcTimeoutException, RpcSendRequestException, RpcTooMuchRequestException;
 
 }
