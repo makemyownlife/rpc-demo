@@ -16,9 +16,10 @@ public class RpcServerUnitTest {
     }
 
     @Test
-    public void testServer() {
+    public void testServer() throws InterruptedException {
         RpcServer rpcServer = startRpcServer();
         rpcServer.start();
+        Thread.sleep(100000);
     }
 
 }
